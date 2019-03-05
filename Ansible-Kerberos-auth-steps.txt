@@ -1,10 +1,13 @@
 How to setup Kerberos Authentication on Local Ansible Controller(Linux server)
 
 Step-by-step guide:
-1. Provision a linux server and windows server and make sure they are in the same domail.
-2. The krb5.conf file is the Kerberos configuration file and this is by default configured after installing krb5-workstation on your domain.
-3. Run the commands below to install python-kerberos dependencies and python-kerberos wrapper
+1. Provision a linux server and windows server and make sure they are in the same domain.
+NOTE: Make sure you run the powershell script below after provisioning windows server to allow WinRM connections and enable PS Remoting inorder to authenticate from Ansible controller which is a linux machine.
+Link to PowerShell script: https://github.com/ansible/ansible/blob/devel/examples/scripts/ConfigureRemotingForAnsible.ps1
 
+2. The krb5.conf file is the Kerberos configuration file and this is by default configured after installing krb5-workstation on your domain.
+
+3. Run the commands below to install python-kerberos dependencies and python-kerberos wrapper
 Run the following commands:
 # Via Yum yum -y install python-devel krb5-devel krb5-libs krb5-workstation
 # Via Apt (Ubuntu) sudo apt-get install python-dev libkrb5-dev krb5-user
@@ -19,7 +22,8 @@ Run the following commands:
 sudo vi /etc/krb5.conf
 # under [libdefaults], change the value of "dns_lookup_realm" and "dns_lookup_kdc" from false to true
 
-5. [realms] and [domain_realm] are by default configured in the krb5.conf file. You don't need to add anything to it unless the remote server is not part of your domain. 
+5. [realms] and [domain_realm] are by default configured in the krb5.conf file. You don't need to add anything to it unless the remote server is not part of your domain
+
 6. Now, run the command below to test if you're authorised by your domain controller.
 kinit username@MY.DOMAIN.COM
 # To display the details of what kerberos tickets you have acquired, run klist
