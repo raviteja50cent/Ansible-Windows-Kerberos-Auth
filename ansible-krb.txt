@@ -1,0 +1,37 @@
+How to setup Kerberos Authentication on Local Ansible Controller(Linux server)
+
+Step-by-step guide:
+1. Provision a linux server of any flavour through congo.cdk.com
+2. The krb5.conf file is by default configured with DS.AD.ADP.COM for any DS/DSLAB servers provisioned through congo.cdk.com. This doesn't mean kerberos is installed on it, well you have to install it.
+3. Run the commands below to install python-kerberos dependencies and python-kerberos wrapper
+
+Run the following commands:
+# Via Yum yum -y install python-devel krb5-devel krb5-libs krb5-workstation
+# Via Apt (Ubuntu) sudo apt-get install python-dev libkrb5-dev krb5-user
+# python-kerberos wrapper pip install pywinrm[kerberos]
+# problems with pip? run the commands below For yum: sudo yum group install "Development Tools" sudo yum install python-setuptools sudo easy_install pip
+
+For apt-get
+sudo apt-get install python-setuptools python-dev build-essential sudo easy_install pip
+
+4. Edit your krb5.conf (Kerberos configuration file) and make the changes as specified below.
+Run the following commands:
+sudo vi /etc/krb5.conf
+# under [libdefaults], change the value of "dns_lookup_realm" and "dns_lookup_kdc" from false to true
+
+5. [realms] and [domain_realm] are by default configured in the krb5.conf file. You don't need to add anything to it unless the remote server is not part of DS or DSLAB domains. 
+6. Now, run the command below to test if you're authorised by your domain controller.
+kinit username@DS.AD.ADP.COM
+# To display the details of what kerberos tickets you have acquired, run klist
+
+7. If the above command "kinit username@DS.AD.ADP.COM" didn't create a kerberos ticket, that means you are using an alias. Run the command below to check if you're using a fully qualified domain name.
+kinit -C user@MY.DOMAIN.COM klist
+
+8. Once the ticket is created, use the win-ping module to test the connection from linux to windows server.
+Run the following commands:
+# ansible -m win_ping (Note: Run this only if you have the hostname added to you hosts file)
+# ansible <FQDN/IP> -m win_ping
+
+9. Upon successful authentication, run the sample playbook to copy a text file from local machine to remote server.
+Run the following commands:
+# ansible playbook -i <path/to/hosts/file> site.yaml
