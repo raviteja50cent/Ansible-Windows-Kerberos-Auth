@@ -1,7 +1,6 @@
 ---
 
 - hosts: windows
-  remote_user: root
 - tasks:
   - name: Copying text file remotely!
     win_copy:
