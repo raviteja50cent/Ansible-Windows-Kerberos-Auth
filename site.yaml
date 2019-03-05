@@ -1,0 +1,9 @@
+---
+
+- hosts: windows
+  remote_user: root
+- tasks:
+  - name: Copying text file remotely!
+    win_copy:
+      src: /opt/temp/sample.txt
+      dest: C:\Temp
